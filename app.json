@@ -1,0 +1,69 @@
+{
+    "name": "ARZANXD UPLOADER",
+    "description": "✨ 𝑻𝒆𝒙𝒕 𝑳𝒆𝒆𝒄𝒉 𝑽𝒊𝒅𝒆𝒐 𝑬𝒙𝒕𝒓𝒂𝒄𝒕𝒐𝒓 𝑭𝒐𝒓 𝑻𝒆𝒍𝒆𝒈𝒓𝒂𝒎 ✨",
+    "logo": "https://graph.org/file/41f315a54e91963176271-084a885105ba946f5e.jpg",
+    "keywords": [
+        "telegram-bot",
+        "video-extractor",
+        "txt-leech",
+        "drm-downloader",
+        "pyrogram"
+    ],
+    "repository": "https://github.com/yourusername/saini-txt-leech-bot",
+    "success_url": "https://t.me/Digizoro_Official",
+    "stack": "container",
+    "env": {
+        "API_ID": {
+            "description": "🔑 𝑬𝒏𝒕𝒆𝒓 𝒀𝒐𝒖𝒓 𝑨𝒑𝒊 𝑰𝑫 (𝒇𝒓𝒐𝒎 𝒎𝒚.𝒕𝒆𝒍𝒆𝒈𝒓𝒂𝒎.𝒐𝒓𝒈)",
+            "value": "22480303",
+            "required": true
+        },
+        "API_HASH": {
+            "description": "🔐 𝑬𝒏𝒕𝒆𝒓 𝒀𝒐𝒖𝒓 𝑨𝒑𝒊 𝑯𝒂𝒔𝒉",
+            "value": "99c931b6c1ae6f8c3c3e87da173fa424",
+            "required": true
+        },
+        "BOT_TOKEN": {
+            "description": "🤖 𝑬𝒏𝒕𝒆𝒓 𝒀𝒐𝒖𝒓 𝑩𝒐𝒕 𝑻𝒐𝒌𝒆𝒏 (𝒇𝒓𝒐𝒎 @𝑩𝒐𝒕𝑭𝒂𝒕𝒉𝒆𝒓)",
+            "value": "8418965893:AAHotViAtPExCi1piSlqvD8QTgCLfcKD2Eg",
+            "required": true
+        },
+        "OWNER": {
+            "description": "👑 𝙀𝙣𝙩𝙚𝙧 𝙔𝙤𝙪𝙧 𝙏𝙚𝙡𝙚𝙜𝙧𝙖𝙢 𝙐𝙨𝙚𝙧 𝙄𝘿 (𝙤𝙬𝙣𝙚𝙧 𝙗𝙮𝙥𝙖𝙨𝙨 𝙘𝙝𝙚𝙘𝙠𝙨)",
+            "value": "7518770522",
+            "required": true
+        },
+        "CREDIT": {
+            "description": "🌟 𝘾𝙧𝙚𝙙𝙞𝙩 𝙉𝙖𝙢𝙚 (6-8 𝙡𝙚𝙩𝙩𝙚𝙧𝙨, 𝙨𝙪𝙥𝙥𝙤𝙧𝙩𝙨 𝙏𝙚𝙭𝙩|𝙐𝙍𝙇 𝙛𝙤𝙧 𝙝𝙮𝙥𝙚𝙧𝙡𝙞𝙣𝙠)",
+            "value": "𝙎𝘼𝙄𝙉𝙄 𝘽𝙊𝙏𝙎",
+            "required": true
+        },
+        "AUTH_USERS": {
+            "description": "👥 𝘾𝙤𝙢𝙢𝙖-𝙨𝙚𝙥𝙖𝙧𝙖𝙩𝙚𝙙 𝙪𝙨𝙚𝙧 𝙄𝘿𝙨 𝙛𝙤𝙧 𝙥𝙧𝙚𝙢𝙞𝙪𝙢 𝙖𝙘𝙘𝙚𝙨𝙨 (𝙤𝙥𝙩𝙞𝙤𝙣𝙖𝙡)",
+            "value": "",
+            "required": false
+        }
+    },
+    "formation": {
+        "worker": {
+            "quantity": 1,
+            "size": "standard-2x"
+        }
+    },
+    "addons": [],
+    "buildpacks": [
+        {
+            "url": "https://github.com/amivin/aria2-heroku.git"
+        },
+        {
+            "url": "heroku/python"
+        },
+        {
+            "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+        }
+    ],
+    "scripts": {
+        "postdeploy": "python bot.py"
+    },
+    "website": "https://t.me/Digizoro_Official"
+}

@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+.env
+auth_store.json
+youtube_cookies.txt
+downloads/
+*.mp4
+*.ts
+*.logdevice_private_key.txt
+device_client_id_blob
+logs.txt
+.env
+run cmd.txt
+device_private_key.txt
+modules/bot.session
+modules/user_store.json
