@@ -33,7 +33,7 @@ COPY . .
 
 # Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r sainibots.txt && \
+    ppip install --no-cache-dir -r requirements.txt \
     pip install -U yt-dlp && \
     pip install --no-cache-dir m3u8 aiofiles aiohttp gunicorn
 
