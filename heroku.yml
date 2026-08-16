@@ -1,9 +1,6 @@
 build:
   docker:
-    worker: Dockerfile
+    web: Dockerfile
+
 run:
-  worker: python3 modules/main.py
-
-  # for heroku deployment...add this bulidpack.  
-#  https://github.com/heroku/heroku-buildpack-activestorage-preview
-
+  web: sh -c "gunicorn --bind 0.0.0.0:${PORT:-8000} app:app & python3 modules/main.py"
