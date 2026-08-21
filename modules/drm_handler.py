@@ -833,9 +833,9 @@ async def drm_handler(bot: Client, m: Message):
                     continue
                 url = f"{PWAPI2}?url={url}&token={pwtoken}"
             
-            elif 'encrypted.m' in url:
-                appxkey = url.split('*')[1]
-                url = url.split('*')[0]
+                        if ("classx.co.in" in url or "akamai.net" in url) and "*" in url:
+                url = url.split("*")[0]
+                
 
             if not hls_key:
                 if "youtu" in url: ytf = f"bv*[height<={raw_text2}][ext=mp4]+ba[ext=m4a]/b[height<={raw_text2}]"
