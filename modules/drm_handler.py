@@ -350,7 +350,6 @@ def _extract_url_title(line: str):
         except Exception:
             title = "Unknown"
     return title, full_url
-
 async def send_failed_notice(bot, channel_id, vid_id, title, url, reason):
     msg = (
         f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐅𝐀𝐈𝐋𝐄𝐃  𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n"
@@ -501,4 +500,266 @@ async def drm_handler(bot: Client, m: Message):
         return
 
     if m.document:
-        editable = await m.reply_text(f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐋𝐈𝐍𝐊  𝐒𝐔𝐌𝐌𝐀𝐑𝐘\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n📊 Total: {len(links)}\n  ├ PDF   : {pdf_count}\n  ├ V2    : {v2_count}\n  ├ MPD   : {mpd_count}\n  ├ M3U8  : {m3u8_count}\n  ├ DRM   : {drm_count}\n  ├ 
+        editable = await m.reply_text(f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐋𝐈𝐍𝐊  𝐒𝐔𝐌𝐌𝐀𝐑𝐘\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n📊 Total: {len(links)}\n  ├ PDF   : {pdf_count}\n  ├ V2    : {v2_count}\n  ├ MPD   : {mpd_count}\n  ├ M3U8  : {m3u8_count}\n  ├ DRM   : {drm_count}\n  ├ YT    : {yt_count}\n  ├ ZIP   : {zip_count}\n  └ Other : {other_count}\n\n✧ Send starting index (1‑{len(links)}):")
+        try:
+            input0: Message = await bot.listen(editable.chat.id, timeout=200)
+            raw_text = input0.text
+            await input0.delete(True)
+        except asyncio.TimeoutError:
+            raw_text = '1'
+    
+        if int(raw_text) > len(links):
+            await editable.edit(f"✧ Invalid index. Please enter between 1 and {len(links)}.")
+            globals.processing_request = False
+            await m.reply_text("✧ Process cancelled.")
+            return
+
+        await editable.edit("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐁𝐀𝐓𝐂𝐇  𝐍𝐀𝐌𝐄\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Enter batch name or /Sis for filename.")
+        try:
+            input1: Message = await bot.listen(editable.chat.id, timeout=200)
+            raw_text0 = input1.text
+            await input1.delete(True)
+        except asyncio.TimeoutError:
+            raw_text0 = '/Sis'
+      
+        if raw_text0 == '/Sis': b_name = file_name.replace('_', ' ')
+        else: b_name = raw_text0
+
+        await editable.edit("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐑𝐄𝐒𝐎𝐋𝐔𝐓𝐈𝐎𝐍\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Choose quality:\n  144  240  360  480  720  1080")
+        try:
+            input2: Message = await bot.listen(editable.chat.id, timeout=300)
+            raw_text2 = input2.text
+            await input2.delete(True)
+        except asyncio.TimeoutError:
+            raw_text2 = '480'
+        raw_text2 = sanitize_height(raw_text2)
+        if raw_text2 is None: raw_text2 = "480"
+        try:
+            if raw_text2 == "144": res = "256x144"
+            elif raw_text2 == "240": res = "426x240"
+            elif raw_text2 == "360": res = "640x360"
+            elif raw_text2 == "480": res = "854x480"
+            elif raw_text2 == "720": res = "1280x720"
+            elif raw_text2 == "1080": res = "1920x1080"
+            else: res = "UN"
+        except Exception:
+            res = "UN"
+        quality = f"{raw_text2}p"
+
+        await editable.edit("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐏𝐖  𝐓𝐎𝐊𝐄𝐍\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Enter PW token or /Vip for saved token.")
+        try:
+            input_tok: Message = await bot.listen(editable.chat.id, timeout=300)
+            raw_tok = input_tok.text
+            await input_tok.delete(True)
+        except asyncio.TimeoutError:
+            raw_tok = '/Vip'
+        if raw_tok == '/Vip': pwtoken = globals.pwtoken
+        else: pwtoken = raw_tok
+
+        await editable.edit("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐂𝐑𝐄𝐃𝐈𝐓\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Enter credit text (or /Sobi for saved).\n   Supports: Text|URL")
+        try:
+            input3: Message = await bot.listen(editable.chat.id, timeout=200)
+            raw_text3 = input3.text
+            await input3.delete(True)
+        except asyncio.TimeoutError:
+            raw_text3 = '/Sobi'
+        if raw_text3 == '/Sobi': CR = globals.CR
+        else: CR = parse_credit(raw_text3)
+
+        if auto_thumb_url:
+            thumb_prompt = f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐓𝐇𝐔𝐌𝐁𝐍𝐀𝐈𝐋\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Auto-detected thumbnail:\n`{auto_thumb_url}`\n\nSend 'yes' to use it, send a new URL, or 'no' to skip."
+        else:
+            thumb_prompt = "╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐓𝐇𝐔𝐌𝐁𝐍𝐀𝐈𝐋\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Send thumbnail URL (must end with .jpg)\n   or send 'no' to skip."
+            
+        await editable.edit(thumb_prompt)
+        try:
+            input6: Message = await bot.listen(editable.chat.id, timeout=200)
+            raw_text6 = input6.text.strip()
+            await input6.delete(True)
+        except asyncio.TimeoutError:
+            raw_text6 = 'yes' if auto_thumb_url else 'no'
+            
+        if raw_text6.lower() in ['yes', 'y', 'auto'] and auto_thumb_url: raw_text6 = auto_thumb_url
+        elif raw_text6.lower() in ['no', 'n', 'skip']: raw_text6 = 'no'
+            
+        if raw_text6.startswith("http://") or raw_text6.startswith("https://"):
+            thumb_local = f"thumb_{uuid.uuid4().hex}.jpg"
+            thumb_ok = False
+            try:
+                async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30), headers={"User-Agent": "Mozilla/5.0"}) as _sess:
+                    async with _sess.get(raw_text6) as _resp:
+                        if _resp.status == 200:
+                            _content = await _resp.read()
+                            if _content and len(_content) > 100:
+                                async with aiofiles.open(thumb_local, "wb") as _tf:
+                                    await _tf.write(_content)
+                                await asyncio.sleep(0)
+                                if os.path.exists(thumb_local) and os.path.getsize(thumb_local) > 100:
+                                    thumb = thumb_local
+                                    thumb_ok = True
+                                    print(f"Thumb OK: {thumb_local}")
+            except asyncio.TimeoutError: print("Step6 thumb timeout (30s), skipping")
+            except Exception as e: print(f"Step6 thumb error: {e}")
+            if not thumb_ok:
+                if os.path.exists(thumb_local): os.remove(thumb_local)
+                thumb = globals.thumb
+        else:
+            thumb = globals.thumb
+
+        await editable.edit("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐂𝐇𝐀𝐍𝐍𝐄𝐋  𝐈𝐃\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Enter channel ID (e.g. -1001234567890)\n   or /Baby to use this chat.")
+        try:
+            input7: Message = await bot.listen(editable.chat.id, timeout=200)
+            raw_text7 = input7.text
+            await input7.delete(True)
+        except asyncio.TimeoutError:
+            raw_text7 = '/Baby'
+
+        if "/Baby" in raw_text7: channel_id = m.chat.id
+        else: channel_id = raw_text7
+        await editable.delete()
+
+    elif m.text:
+        if any(ext in links[i][1] for ext in [".pdf", ".jpeg", ".png"] for i in range(len(links))):
+            raw_text = '1'
+            raw_text7 = '/Baby'
+            channel_id = m.chat.id
+            CR = globals.CR
+            path = os.path.join("downloads", "Free Batch")
+            editable = await m.reply_text("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐋𝐈𝐍𝐊  𝐂𝐀𝐏𝐓𝐔𝐑𝐄𝐃\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Enter batch name or /unknown for default.")
+            try:
+                input_bn: Message = await bot.listen(editable.chat.id, filters=filters.text & filters.user(m.from_user.id))
+                raw_text0 = input_bn.text
+                await input_bn.delete(True)
+            except Exception:
+                raw_text0 = '/unknown'
+            b_name = '💥𝐂𝐨𝐧𝐭𝐚𝐜𝐭: @Blaster_fazxe' if raw_text0 == '/unknown' else raw_text0
+            await editable.delete()
+        else:
+            editable = await m.reply_text("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐑𝐄𝐒𝐎𝐋𝐔𝐓𝐈𝐎𝐍\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Choose quality:\n  144  240  360  480  720  1080")
+            input2: Message = await bot.listen(editable.chat.id, filters=filters.text & filters.user(m.from_user.id))
+            raw_text2 = input2.text
+            raw_text2 = sanitize_height(raw_text2)
+            if raw_text2 is None: raw_text2 = "480"
+            quality = f"{raw_text2}p"
+            await m.delete()
+            await input2.delete(True)
+            try:
+                if raw_text2 == "144": res = "256x144"
+                elif raw_text2 == "240": res = "426x240"
+                elif raw_text2 == "360": res = "640x360"
+                elif raw_text2 == "480": res = "854x480"
+                elif raw_text2 == "720": res = "1280x720"
+                elif raw_text2 == "1080": res = "1920x1080"
+                else: res = "UN"
+            except Exception:
+                res = "UN"
+
+            await editable.edit("╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐁𝐀𝐓𝐂𝐇  𝐍𝐀𝐌𝐄\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n✧ Enter batch name or /unknown for default.")
+            try:
+                input_bn: Message = await bot.listen(editable.chat.id, filters=filters.text & filters.user(m.from_user.id))
+                raw_text0 = input_bn.text
+                await input_bn.delete(True)
+            except Exception:
+                raw_text0 = '/unknow'
+            b_name = '💥𝐂𝐨𝐧𝐭𝐚𝐜𝐭: @Blaster_fazxe' if raw_text0 == '/unknow' else raw_text0
+
+            CR = globals.CR
+            raw_text = '1'
+            raw_text7 = '/Baby'
+            channel_id = m.chat.id
+            path = os.path.join("downloads", "Free Batch")
+            thumb = '/d'
+            vidwatermark = '/d'
+            pdfwatermark = globals.pdfwatermark
+            pdfthumb = globals.pdfthumb
+            await editable.delete()
+        
+    try:
+        if m.document and raw_text == "1":
+            batch_message = await bot.send_message(chat_id=channel_id, text=f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐁𝐀𝐓𝐂𝐇  𝐒𝐓𝐀𝐑𝐓\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n📚 {b_name}")
+            if "/Baby" not in raw_text7:
+                await bot.send_message(chat_id=m.chat.id, text=f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐓𝐀𝐒𝐊  𝐒𝐓𝐀𝐑𝐓𝐄𝐃\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n📚 {b_name}\n\n🔄 Processing… check your channel.")
+                await bot.pin_chat_message(channel_id, batch_message.id)
+                message_id = batch_message.id
+                pinning_message_id = message_id + 1
+                await bot.delete_messages(channel_id, pinning_message_id)
+        else:
+             if "/Baby" not in raw_text7:
+                await bot.send_message(chat_id=m.chat.id, text=f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐓𝐀𝐒𝐊  𝐒𝐓𝐀𝐑𝐓𝐄𝐃\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n📚 {b_name}\n\n🔄 Processing… check your channel.")
+    except Exception as e:
+        await m.reply_text(f"╭─━━━━━━ 💜 ━━━━━━─╮\n  𝐄𝐑𝐑𝐎𝐑\n╰─━━━━━━ 💜 ━━━━━━─╯\n\n`{e}`")
+
+    failed_count = 0
+    count = int(raw_text)
+    arg = int(raw_text)
+    try:
+        for i in range(arg-1, len(links)):
+            if globals.cancel_requested:
+                await m.reply_text("🌼**𝐒𝐓𝐎𝐏𝐏𝐄𝐃**🌼")
+                globals.processing_request = False
+                globals.cancel_requested = False
+                return
+  
+            Vxy = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
+            
+            hls_key = None
+            pdf_password = None
+            
+            if "m3u8HLS_KEY=" in Vxy:
+                parts = Vxy.split("m3u8HLS_KEY=")
+                Vxy = parts[0] + "m3u8"
+                hls_key = parts[1].strip()
+            elif "pdfPSWD=" in Vxy:
+                parts = Vxy.split("pdfPSWD=")
+                Vxy = parts[0] + "pdf"
+                pdf_password = parts[1].strip()
+                
+            url = "https://" + Vxy
+            link0 = "https://" + Vxy
+
+            name1 = links[i][0].replace("(", "[").replace(")", "]").replace("_", "").replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace("https", "").replace("http", "").strip()
+            if m.text:
+                if "youtu" in url:
+                    oembed_url = f"https://www.youtube.com/oembed?url={url}&format=json"
+                    response = requests.get(oembed_url)
+                    audio_title = response.json().get('title', 'YouTube Video')
+                    audio_title = audio_title.replace("_", " ")
+                    name = f'{audio_title[:60]}'
+                    namef = f'{audio_title[:60]}'
+                else:
+                    name = f'{name1[:60]}'
+                    if name1.strip(): namef = f'{name1[:60]}'
+                    else:
+                        url_filename = url.split("/")[-1].split("?")[0]
+                        url_filename = os.path.splitext(url_filename)[0]
+                        namef = url_filename[:60] if url_filename else f'file_{count}'
+            else:
+                if topic == "/yes":
+                    raw_title = links[i][0]
+                    t_match = re.search(r"[\(\[]([^\)\]]+)[\)\]]", raw_title)
+                    if t_match:
+                        t_name = t_match.group(1).strip()
+                        v_name = re.sub(r"^[\(\[][^\)\]]+[\)\]]\s*", "", raw_title)
+                        v_name = re.sub(r"[\(\[][^\)\]]+[\)\]]", "", v_name)
+                        v_name = re.sub(r":.*", "", v_name).strip()
+                    else:
+                        t_name = "Untitled"
+                        v_name = re.sub(r":.*", "", raw_title).strip()
+                    
+                    if endfilename == "/d":
+                        name = f'{str(count).zfill(3)}) {name1[:60]}'
+                        namef = f'{v_name}'
+                    else:
+                        name = f'{str(count).zfill(3)}) {name1[:60]} {endfilename}'
+                        namef = f'{v_name} {endfilename}'
+                else:
+                    if endfilename == "/d":
+                        name = f'{str(count).zfill(3)}) {name1[:60]}'
+                        namef = f'{name1[:60]}'
+                    else:
+                        name = f'{str(count).zfill(3)}) {name1[:60]} {endfilename}'
+                        namef = f'{name1[:60]} {endfilename}'
+
+            if "visionias" in url:
+                async with ClientSession() as session:
+                    async with session.get(url, headers={'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'Accept-Language': 'en-US,en;q=0.9', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Pragma': 'no-cache', 'Referer': 'http://www.visionias.in/', 'Sec-Fetch-Dest': 'iframe', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Site': 'cross-site', 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Linux; Android 12; RMX2121) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36', 'sec-ch-ua': '"Chromium";v="107", "Not=A?Brand";v="24"', 'sec-ch-ua-mobile': '?1', 'sec-ch-ua-platform': '"Android"',}) a
