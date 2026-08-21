@@ -22,7 +22,7 @@ RUN wget -q https://github.com/axiomatic-systems/Bento4/archive/v1.6.0-639.zip &
     cd Bento4-1.6.0-639 && \
     mkdir build && \
     cd build && \
-    cmake .. && \
+    cmake -DCMAKE_CXX_STANDARD=17 .. && \
     make -j$(nproc) && \
     cp mp4decrypt /usr/local/bin/ && \
     cd /app && \
@@ -33,7 +33,7 @@ COPY . .
 
 # Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel && \
-    ppip install --no-cache-dir -r requirements.txt \
+    pip install --no-cache-dir -r requirements.txt && \
     pip install -U yt-dlp && \
     pip install --no-cache-dir m3u8 aiofiles aiohttp gunicorn
 
