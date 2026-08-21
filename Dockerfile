@@ -28,7 +28,7 @@ RUN wget -q https://github.com/axiomatic-systems/Bento4/archive/v1.6.0-639.zip &
     cd /app && \
     rm -rf Bento4-1.6.0-639 v1.6.0-639.zip
 
-# Copy project files including entrypoint.sh
+# Copy project
 COPY . .
 
 # Install Python dependencies
@@ -37,8 +37,11 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install -U yt-dlp && \
     pip install --no-cache-dir m3u8 aiofiles aiohttp gunicorn
 
+# Create the startup script automatically inside Docker!
+RUN printf '#!/bin/sh\nPORT="${PORT:-8000}"\ngunicorn --bind 0.0.0.0:$PORT app:app & python3 modules/main.py\n' > /app/start.sh
+
 # Make executables runnable
-RUN chmod +x /app/modules/N_m3u8DL-RE /app/entrypoint.sh
+RUN chmod +x /app/modules/N_m3u8DL-RE /app/start.sh
 
 # aria2 configuration
 RUN mkdir -p /root/.aria2 && \
@@ -56,4 +59,4 @@ RUN mkdir -p /root/.aria2 && \
 
 ENV COOKIES_FILE_PATH=/app/modules/youtube_cookies.txt
 
-CMD ["/app/entrypoint.sh"]
+CMD ["/app/start.sh"]
