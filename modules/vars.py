@@ -3,11 +3,11 @@
 import os
 from os import environ
 
-API_ID = int(environ.get("API_ID", ""))
-API_HASH = environ.get("API_HASH", "")
-BOT_TOKEN = environ.get("BOT_TOKEN")
+API_ID = int(environ.get("API_ID", "33088642"))
+API_HASH = environ.get("API_HASH", "bf6a7d6071350cb64849d46b8b4849e9")
+BOT_TOKEN = environ.get("8889351159:AAFce50SKx2NLkD7SFMfQX2tau1esuEvh5g")
 
-OWNER = int(environ.get("OWNER", ""))
+OWNER = int(environ.get("OWNER", "5808599565"))
 CREDIT = environ.get("CREDIT", " @CinderellaContactBot")
 cookies_file_path = os.getenv("cookies_file_path", "youtube_cookies.txt")
 
